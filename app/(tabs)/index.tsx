@@ -1,75 +1,143 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const [task, setTask] = useState<string>('');
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 20,
+        }}>
+          <LinearGradient
+            colors={['#34C8E8', '#4E4AF2']}
+            style={styles.logo}>
+            <Text style={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: 24
+            }}>I</Text>
+          </LinearGradient>
+          <Text style={{
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 24
+          }}>Tasks</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={{
+            color: '#C1BABA'
+          }}>Hallo</Text>
+
+          <TouchableOpacity style={{
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            borderRadius: 8,
+            backgroundColor: '#DC3636',
+          }}
+            onPress={() => Alert.alert('Delete nieh??')}
+          >
+            <Text style={{
+              color: '#fff'
+            }}>X</Text>
+          </TouchableOpacity>
+
+        </View>
+
+        <View style={styles.inner}>
+          <View style={styles.form}>
+            <TextInput
+              placeholder={`Input Field`}
+              style={styles.input}
+              value={task}
+              placeholderTextColor={'#C1BABA'}
+              onChangeText={setTask}
+              focusable
+            />
+            <TouchableOpacity onPress={() => Alert.alert('halo')} activeOpacity={0.8}>
+              <LinearGradient
+                colors={['#34C8E8', '#4E4AF2']}
+                style={styles.btn}>
+                <Text style={{ color: 'white' }}>Add</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView >
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    paddingTop: 70,
+    backgroundColor: '#242C3B',
+    paddingHorizontal: 20,
+  },
+  input: {
+    flex: 1,
+    height: 60,
+    backgroundColor: '#242C3B',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    color: '#fff',
+    elevation: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#2d384dff',
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+  },
+  form: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  btn: {
+    paddingVertical: 18,
+    height: 60,
+    width: 80,
     alignItems: 'center',
-    gap: 8,
+    textAlign: 'center',
+    borderRadius: 8,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  inner: {
+    flex: 1,
+    justifyContent: 'flex-end',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  logo: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 100,
   },
+  card: {
+    height: 60,
+    backgroundColor: '#242C3B',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#2d384dff',
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }
 });
