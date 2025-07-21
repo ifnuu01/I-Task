@@ -1,10 +1,58 @@
+import Task from '@/components/Task';
+import { TaskProps } from '@/types/type';
+import { loadTasks, storeTasks } from '@/utils/storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const [task, setTask] = useState<string>('');
+  const [listTask, setListTask] = useState<TaskProps[]>([]);
+
+  useEffect(() => {
+    loadTasks()
+      .then(setListTask)
+      .catch(() => Alert.alert('Failed to load tasks'))
+  }, [])
+
+  useEffect(() => {
+    storeTasks(listTask).catch(() => Alert.alert('Failed to save tasks'))
+  }, [listTask])
+
+  const createTask = () => {
+    if (task === '') {
+      return Alert.alert(
+        'Alert', 'Task tidak boleh kosong!', [
+        {
+          text: 'Ok',
+          onPress: () => null
+        }
+      ]
+      )
+    }
+    setListTask([...listTask, { task: task }]);
+    setTask('');
+  }
+
+  const completeTask = (index: number, task: string) => {
+    Alert.alert(
+      'Complete Task', `${task} Yakin Sudah Selesai?`, [
+      {
+        text: 'Belum',
+        onPress: () => null
+      },
+      {
+        text: 'Sudah',
+        onPress: () => {
+          let itemCopy = [...listTask];
+          itemCopy.splice(index, 1);
+          setListTask(itemCopy);
+        },
+      },
+    ]
+    )
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -33,27 +81,12 @@ export default function HomeScreen() {
           }}>Tasks</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={{
-            color: '#C1BABA'
-          }}>Hallo</Text>
+        <FlatList
+          data={listTask}
+          renderItem={({ item, index }) => <Task task={item.task} callback={() => completeTask(index, item.task)} />}
+        />
 
-          <TouchableOpacity style={{
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            borderRadius: 8,
-            backgroundColor: '#DC3636',
-          }}
-            onPress={() => Alert.alert('Delete nieh??')}
-          >
-            <Text style={{
-              color: '#fff'
-            }}>X</Text>
-          </TouchableOpacity>
-
-        </View>
-
-        <View style={styles.inner}>
+        <View style={styles.absolute}>
           <View style={styles.form}>
             <TextInput
               placeholder={`Input Field`}
@@ -63,7 +96,7 @@ export default function HomeScreen() {
               onChangeText={setTask}
               focusable
             />
-            <TouchableOpacity onPress={() => Alert.alert('halo')} activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => createTask()}>
               <LinearGradient
                 colors={['#34C8E8', '#4E4AF2']}
                 style={styles.btn}>
@@ -100,6 +133,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
   },
+  absolute: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+  },
   form: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -115,29 +155,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
   },
-  inner: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
   logo: {
     paddingHorizontal: 15,
     paddingVertical: 5,
     borderRadius: 100,
-  },
-  card: {
-    height: 60,
-    backgroundColor: '#242C3B',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#2d384dff',
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
   }
 });
